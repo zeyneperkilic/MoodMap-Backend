@@ -21,6 +21,18 @@ from spotipy.oauth2 import SpotifyOAuth
 from session import SessionManager
 import requests
 
+# Logging ayarları
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Environment variables
+SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID", "b10eaf728ba24184ae191fe5dd193197")
+SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET", "b10eaf728ba24184ae191fe5dd193197")
+SPOTIFY_REDIRECT_URI = os.getenv("SPOTIFY_REDIRECT_URI", "http://localhost:8000/callback")
+
+# Session manager
+session_manager = SessionManager()
+
 app = FastAPI()
 
 # Frontend dizinini belirt
@@ -413,14 +425,6 @@ async def logout(request: Request):
     except Exception as e:
         print(f"Error during logout: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
-# Environment variables
-SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID", "b10eaf728ba24184ae191fe5dd193197")
-SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET", "b10eaf728ba24184ae191fe5dd193197")
-SPOTIFY_REDIRECT_URI = os.getenv("SPOTIFY_REDIRECT_URI", "http://localhost:8000/callback")
-
-# Session manager
-session_manager = SessionManager()
 
 # Spotify OAuth
 sp_oauth = SpotifyOAuth(
