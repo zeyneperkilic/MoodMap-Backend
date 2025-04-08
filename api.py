@@ -25,8 +25,8 @@ logger = logging.getLogger(__name__)
 
 # Environment variables
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID", "b10eaf728ba24184ae191fe5dd193197")
-SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET", "b10eaf728ba24184ae191fe5dd193197")
-SPOTIFY_REDIRECT_URI = os.getenv("SPOTIFY_REDIRECT_URI", "http://localhost:8000/callback")
+SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
+SPOTIFY_REDIRECT_URI = os.getenv("SPOTIFY_REDIRECT_URI", "https://moodmap-backend-production.up.railway.app/callback")
 
 # Session manager
 session_manager = SessionManager()
@@ -203,31 +203,26 @@ def analyze_sentiment_vader(text):
 
 @app.get("/spotify/login")
 async def spotify_login():
-    try:
-        auth_url = get_auth_url()
-        print(f"Generated Spotify auth URL: {auth_url}")
-        return RedirectResponse(url=auth_url, status_code=303)
-    except Exception as e:
-        print(f"Error in spotify_login: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+    auth_url = sp_oauth.get_authorize_url()
+    logger.info(f"Generated auth URL: {auth_url}")
+    return RedirectResponse(url=auth_url)
 
 @app.get("/callback")
-async def spotify_callback(code: str = Query(None), request: Request = None):
-    if not code:
-        raise HTTPException(status_code=400, detail="No authorization code provided")
-    
-    try:
-        token_info = get_token_info(code)
-        print(f"Received token info: {token_info}")
-        
-        # Session'ı ayarla
-        response = RedirectResponse(url="http://127.0.0.1:5001/mood-selection", status_code=303)
-        session_manager.set_session(response, {"token_info": token_info})
-        
-        return response
-    except Exception as e:
-        print(f"Callback error: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+async def callback(request: Request, code: str = None):
+    if code:
+        try:
+            token_info = sp_oauth.get_access_token(code, check_cache=False)
+            logger.info(f"Received token info: {token_info}")
+            
+            # Set session
+            session_manager.set_session(request, token_info)
+            
+            # Redirect to frontend
+            return RedirectResponse(url="http://127.0.0.1:5001/mood-selection")
+        except Exception as e:
+            logger.error(f"Error in callback: {str(e)}")
+            raise HTTPException(status_code=500, detail=str(e))
+    return {"error": "No code provided"}
 
 @app.get("/spotify/me")
 async def get_spotify_user(request: Request):
@@ -365,56 +360,52 @@ async def get_recommendations(color: str, request: Request):
 async def create_playlist(request: Request):
     try:
         # Get session data
-        session_data = session_manager.get_session(request)
-        if not session_data:
-            raise HTTPException(status_code=401, detail="Not authenticated")
-
-        # Get token info
-        token_info = session_data.get('token_info')
+        token_info = session_manager.get_session(request)
         if not token_info:
-            raise HTTPException(status_code=401, detail="No token information found")
-
-        # Check if token needs refresh
-        token_info = refresh_token_if_expired(token_info)
-        
+            raise HTTPException(status_code=401, detail="Not authenticated")
+            
         # Get request data
         data = await request.json()
-        playlist_name = data.get('name')
-        track_uris = data.get('tracks')
-
-        if not playlist_name or not track_uris:
-            raise HTTPException(status_code=400, detail="Missing playlist name or tracks")
-
+        logger.info(f"Request data: {data}")
+        
+        # Refresh token if needed
+        token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
+        logger.info(f"Refreshed token info: {token_info}")
+        
         # Create Spotify client
         sp = get_spotify_client(token_info['access_token'])
+        logger.info("Spotify client created")
         
         # Get user ID
-        user_info = sp.current_user()
-        user_id = user_info['id']
-
+        user_id = sp.current_user()['id']
+        logger.info(f"User ID: {user_id}")
+        
         # Create playlist
-        playlist = sp.user_playlist_create(user_id, playlist_name, public=False)
-        playlist_id = playlist['id']
-
-        # Add tracks to playlist
-        sp.playlist_add_items(playlist_id, track_uris)
-
-        return {"success": True, "playlist_id": playlist_id}
-
+        playlist = sp.user_playlist_create(
+            user=user_id,
+            name=data['name'],
+            description=f"Created by MoodMap - {data['name']}"
+        )
+        logger.info(f"Playlist created: {playlist}")
+        
+        # Add tracks
+        if 'tracks' in data and data['tracks']:
+            sp.playlist_add_items(playlist['id'], data['tracks'])
+            logger.info("Tracks added to playlist")
+            
+        return {"success": True, "playlist_url": playlist['external_urls']['spotify']}
     except Exception as e:
-        print(f"Error creating playlist: {str(e)}")
+        logger.error(f"Error creating playlist: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/logout")
 async def logout(request: Request):
     try:
-        session_id = request.cookies.get('session_id')
-        if session_id:
-            session_manager.clear_session(session_id)
+        session_manager.clear_session(request)
         return {"success": True}
     except Exception as e:
-        print(f"Error during logout: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error during logout: {str(e)}")
+        return {"success": False, "error": str(e)}
 
 # Spotify OAuth
 sp_oauth = SpotifyOAuth(
