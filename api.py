@@ -13,8 +13,6 @@ import random
 import os
 from spotify_auth import get_auth_url, get_token_info, get_spotify_client, refresh_token_if_expired
 from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 from session import session_manager
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -35,17 +33,9 @@ session_manager = SessionManager()
 
 app = FastAPI()
 
-# Frontend dizinini belirt
-frontend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
-templates_dir = os.path.join(frontend_dir, "templates")
-
-# Statik dosyaları ve template'leri ayarla
-app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
-templates = Jinja2Templates(directory=templates_dir)
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Güvenlik için production'da spesifik domainler belirtilmeli
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
