@@ -1,0 +1,194 @@
+{
+    "test_song_uri": {
+        "likes": 1,
+        "dislikes": 0,
+        "comments": [
+            "This is awesome!"
+        ],
+        "sentiment": 1.0
+    },
+    "Unknown": {
+        "likes": 2,
+        "dislikes": 0,
+        "comments": [],
+        "sentiment": 0
+    },
+    "spotify:track:06OuTTgeFW3c5290wJdDJx": {
+        "likes": 1,
+        "dislikes": 0,
+        "comments": [],
+        "sentiment": 0
+    },
+    "spotify:track:0vSOgoxkCRxDgurO8RSEr5": {
+        "likes": 1,
+        "dislikes": 0,
+        "comments": [],
+        "sentiment": 0
+    },
+    "spotify:track:5XDei9d2arAWQWXhx1gV23": {
+        "likes": 1,
+        "dislikes": 0,
+        "comments": [],
+        "sentiment": 0
+    },
+    "spotify:track:2uTDgrJJteVK3YEWGdOpXX": {
+        "likes": 0,
+        "dislikes": 1,
+        "comments": [
+            "accurate",
+            "no"
+        ],
+        "sentiment": -0.296
+    },
+    "spotify:track:1lcZPCRAuVXCHSqPsFaWlw": {
+        "likes": 0,
+        "dislikes": 1,
+        "comments": [
+            "I like what I listen to.",
+            "hay\u0131r"
+        ],
+        "sentiment": 0.0
+    },
+    "spotify:track:5nN8BwAQDJDguq7Dpd3JQQ": {
+        "likes": 0,
+        "dislikes": 3,
+        "comments": [
+            "dickhead ",
+            "no",
+            "yes",
+            "correct"
+        ],
+        "sentiment": 0.0
+    },
+    "spotify:track:2L2PfoLfYE2a5ExqfymzLF": {
+        "likes": 0,
+        "dislikes": 1,
+        "comments": [
+            "i think its accurate"
+        ],
+        "sentiment": 0.0
+    },
+    "spotify:track:6Hhx2qh2T8qip8xcfiULCK": {
+        "likes": 0,
+        "dislikes": 1,
+        "comments": [
+            "i liked"
+        ],
+        "sentiment": 0.4215
+    },
+    "spotify:track:7wF3daoQo7SCa7FYq1cmlj": {
+        "likes": 0,
+        "dislikes": 1,
+        "comments": [
+            "i dont like"
+        ],
+        "sentiment": -0.2755
+    },
+    "spotify:track:3TfQGdcFcQL9sKL3PV1QMU": {
+        "likes": 0,
+        "dislikes": 1,
+        "comments": [
+            "not correct"
+        ],
+        "sentiment": 0.0
+    },
+    "spotify:track:3Wq1XLo82SODnXJpYHvnyD": {
+        "likes": 0,
+        "dislikes": 1,
+        "comments": [
+            "yes correct"
+        ],
+        "sentiment": 0.4019
+    },
+    "spotify:track:6rimsvUM83uEm0S7QEsS9J": {
+        "likes": 0,
+        "dislikes": 0,
+        "comments": [
+            "no"
+        ],
+        "sentiment": -0.296
+    },
+    "spotify:track:3BBVKzYSV7iuWutG3saanI": {
+        "likes": 0,
+        "dislikes": 0,
+        "comments": [
+            "no"
+        ],
+        "sentiment": -0.296
+    },
+    "spotify:track:2c1XCyzh0xDBdTUsLV7Svz": {
+        "likes": 0,
+        "dislikes": 0,
+        "comments": [
+            "not correct"
+        ],
+        "sentiment": 0.0
+    },
+    "spotify:track:0skxqaapKhdZ2BW5H1Umxh": {
+        "likes": 0,
+        "dislikes": 0,
+        "comments": [
+            "yes",
+            "no"
+        ],
+        "sentiment": -0.296,
+        "cluster_id": null,
+        "intensity": null,
+        "weighted_score": null
+    },
+    "spotify:track:6HdMeOwJXD3oY1Thn1bsCY": {
+        "likes": 0,
+        "dislikes": 0,
+        "comments": [
+            "yes"
+        ],
+        "sentiment": 0.4019,
+        "cluster_id": 0,
+        "intensity": "5",
+        "weighted_score": 0
+    },
+    "spotify:track:67qn3OtziLlpOtVZ22EiQ4": {
+        "likes": 0,
+        "dislikes": 0,
+        "comments": [
+            "i think its correct"
+        ],
+        "sentiment": 0.0,
+        "cluster_id": 2,
+        "intensity": "5",
+        "weighted_score": 0
+    },
+    "spotify:track:2oeU3QbKx6Cj7lJC2fqD1X": {
+        "likes": 0,
+        "dislikes": 0,
+        "comments": [
+            "it is sad"
+        ],
+        "sentiment": -0.4767,
+        "cluster_id": 0,
+        "intensity": "5",
+        "weighted_score": 0
+    },
+    "spotify:track:6JmaomuzHD7Jr6CM2HunGe": {
+        "likes": 0,
+        "dislikes": 0,
+        "comments": [
+            "great"
+        ],
+        "sentiment": 0.6249,
+        "cluster_id": 1,
+        "intensity": "5",
+        "weighted_score": 0
+    },
+    "spotify:track:1kN6Y8g8TomkObrQfhMGkf": {
+        "likes": 0,
+        "dislikes": 0,
+        "comments": [
+            "what the fuck is this? this is the worst song selection I have ever seen. please recode. "
+        ],
+        "sentiment": -0.743,
+        "cluster_id": 1,
+        "intensity": "5",
+        "weighted_score": 0
+    }
+}
