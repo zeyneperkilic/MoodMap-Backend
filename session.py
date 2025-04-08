@@ -1,50 +1,54 @@
-from itsdangerous import URLSafeSerializer
-from fastapi import Request, Response
+import json
+import os
+from datetime import datetime, timedelta
 
 class SessionManager:
-    def __init__(self, secret_key: str):
-        self.serializer = URLSafeSerializer(secret_key)
-        self.cookie_name = "session"
+    def __init__(self):
         self.sessions = {}
+        self.session_file = "sessions.json"
+        self.load_sessions()
 
-    def create_session(self, session_id, data):
+    def load_sessions(self):
+        try:
+            if os.path.exists(self.session_file):
+                with open(self.session_file, "r") as f:
+                    self.sessions = json.load(f)
+        except Exception as e:
+            print(f"Error loading sessions: {e}")
+            self.sessions = {}
+
+    def save_sessions(self):
+        try:
+            with open(self.session_file, "w") as f:
+                json.dump(self.sessions, f)
+        except Exception as e:
+            print(f"Error saving sessions: {e}")
+
+    def get_session(self, request):
+        session_id = request.cookies.get("session_id")
+        if session_id and session_id in self.sessions:
+            return self.sessions[session_id]
+        return None
+
+    def set_session(self, request, response, data):
+        session_id = request.cookies.get("session_id") or os.urandom(16).hex()
         self.sessions[session_id] = data
+        self.save_sessions()
+        response.set_cookie(
+            key="session_id",
+            value=session_id,
+            httponly=True,
+            secure=True,
+            samesite="lax"
+        )
+        return session_id
 
-    def get_session(self, request: Request) -> dict:
-        session_id = request.cookies.get('session_id')
-        if not session_id:
-            print("No session cookie found")
-            return {}
-        try:
-            data = self.sessions.get(session_id)
-            if data:
-                print("Session data:", data)
-                return data
-            else:
-                print("Session data not found")
-                return {}
-        except Exception as e:
-            print(f"Error loading session: {str(e)}")
-            return {}
-
-    def set_session(self, response: Response, data: dict):
-        try:
-            session_data = self.serializer.dumps(data)
-            response.set_cookie(
-                key=self.cookie_name,
-                value=session_data,
-                httponly=True,
-                samesite='lax',
-                secure=False,  # Development için secure=False
-                path="/"  # Tüm path'lerde geçerli
-            )
-            print("Session set successfully")
-        except Exception as e:
-            print(f"Error setting session: {str(e)}")
-
-    def clear_session(self, session_id):
+    def clear_session(self, request, response):
+        session_id = request.cookies.get("session_id")
         if session_id in self.sessions:
             del self.sessions[session_id]
+            self.save_sessions()
+        response.delete_cookie("session_id")
 
 # Daha güvenli bir secret key kullanıyoruz
-session_manager = SessionManager("moodmap-secret-key-2024") 
+session_manager = SessionManager() 

@@ -17,6 +17,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from session import session_manager
 import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+from session import SessionManager
+import requests
 
 app = FastAPI()
 
@@ -410,6 +413,22 @@ async def logout(request: Request):
     except Exception as e:
         print(f"Error during logout: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+# Environment variables
+SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID", "b10eaf728ba24184ae191fe5dd193197")
+SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET", "b10eaf728ba24184ae191fe5dd193197")
+SPOTIFY_REDIRECT_URI = os.getenv("SPOTIFY_REDIRECT_URI", "http://localhost:8000/callback")
+
+# Session manager
+session_manager = SessionManager()
+
+# Spotify OAuth
+sp_oauth = SpotifyOAuth(
+    client_id=SPOTIFY_CLIENT_ID,
+    client_secret=SPOTIFY_CLIENT_SECRET,
+    redirect_uri=SPOTIFY_REDIRECT_URI,
+    scope="user-read-private user-read-email user-library-read playlist-read-private playlist-modify-public playlist-modify-private"
+)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
